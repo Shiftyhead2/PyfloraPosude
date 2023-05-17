@@ -15,7 +15,7 @@ class AppController:
         self.create_user_table()
 
 
-        padding_frame = Frame(root, padx=50, pady=50)
+        padding_frame = Frame(root,pady=50,padx=50)
         padding_frame.grid(row=0, column=0)
 
         self.login_page = LoginPage(padding_frame, self)
@@ -48,6 +48,12 @@ class AppController:
         self.login_page.show()
     
     def register_user(self,name,surname,username,password):
+
+        if not name or not surname or not username or not password:
+            messagebox.showerror("Registration failed!","Please enter all the values")
+            return
+
+
         hashed_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
 
         conn = sqlite3.connect(self.db_path)
@@ -67,6 +73,12 @@ class AppController:
         self.switch_to_login()
     
     def login_user(self,username,password):
+
+        if not username or not password:
+            messagebox.showerror("Login failed!", "Please enter the login values")
+            return
+
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -92,9 +104,21 @@ class AppController:
 
 def main():
     root = Tk()
-    root.title("PyFlora Posuda")   
+    root.title("PyFlora Posuda")
+    root.resizable(True,True)
+
+    def center_pages():
+        root.grid_rowconfigure(0, weight=1)
+        root.grid_rowconfigure(2, weight=1)
+        root.grid_columnconfigure(0, weight=1)
+    
+    
+
 
     app = AppController(root)
+
+    root.after(0, center_pages)
+
 
     root.mainloop()
     
