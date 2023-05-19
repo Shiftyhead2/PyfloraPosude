@@ -1,31 +1,36 @@
-from tkinter import *
+from tkinter import Frame,Label,Entry,Button
 
 class LoginPage(Frame):
     def __init__(self,master,controller):
         super().__init__(master)
         self.master = master
         self.controller = controller
-        self.grid(sticky="NSEW") 
 
-        self.username_label = Label(self,text = "Username:")
-        self.username_entry = Entry(self)
-        self.password_label = Label(self,text = "Password:")
-        self.password_entry = Entry(self,show = "*")
-        self.login_button = Button(self,text = "Login",width=15,command=self.login)
-        self.register_button = Button(self,text = "Register",width=15,command=self.controller.switch_to_register)
+        self.login_label = Label(self,text = "Login page", font = (45))
+        self.username_label = Label(self,text = "Username:",font = (20))
+        self.username_entry = Entry(self, width= 22, font = (15))
+        self.password_label = Label(self,text = "Password:" , font = (20))
+        self.password_entry = Entry(self,show = "*", width = 22 , font = (15))
+        self.login_button = Button(self,text = "Login",width=25, font = (20) , command=self.login)
+        self.register_button = Button(self,text = "Register",width=25, font = (20) ,command=self.controller.switch_to_register)
 
-        self.username_label.grid(row=0,column=0,sticky="E")
-        self.username_entry.grid(row=0,column=1,columnspan=2,pady= 5)
-        self.password_label.grid(row=1,column=0,sticky="E")
-        self.password_entry.grid(row=1,column=1,columnspan=2,pady= 5)
-        self.login_button.grid(row=2,column=1,columnspan=2,pady = 10)
-        self.register_button.grid(row=3,column=1,columnspan=2,pady = 5)
+        self.login_label.grid(row=0,column=1,sticky="N",pady = 10)
+        self.username_label.grid(row=1,column=0,sticky="E")
+        self.username_entry.grid(row=1,column=1,pady= 5)
+        self.password_label.grid(row=2,column=0,sticky="E")
+        self.password_entry.grid(row=2,column=1,pady= 5)
+        self.login_button.grid(row=3,column=1,pady = 10)
+        self.register_button.grid(row=4,column=1,pady = 5)
     
     def show(self):
-        self.grid(sticky="NSEW")
+        self.master.update_idletasks()  # Ensure the window size is updated
+
+        self.place(relx=0.5, rely=0.5, anchor="center")
+
+
     
     def hide(self):
-        self.grid_remove()
+        self.place_forget()
     
     def login(self):
         self.username = self.username_entry.get()
