@@ -6,17 +6,19 @@ class RegisterPage(Frame):
         self.master = master
         self.controller = controller
 
-        self.register_label = Label(self,text = "Register page", font = (45))
-        self.name_label = Label(self,text = "Name:", font = (20))
+        
+
+        self.register_label = Label(self,text = "Regristracija", font = (45))
+        self.name_label = Label(self,text = "Ime:", font = (20))
         self.name_entry = Entry(self, width= 20 , font = (15))
-        self.surname_label = Label(self,text = "Surname:", font = (20))
+        self.surname_label = Label(self,text = "Prezime:", font = (20))
         self.surname_entry = Entry(self,width= 20, font = (15))
-        self.username_label = Label(self,text = "Username:", font = (20))
+        self.username_label = Label(self,text = "Korisničko ime:", font = (20))
         self.username_entry = Entry(self,width= 20,font = (15))
-        self.password_label = Label(self,text = "Password:", font = (20))
+        self.password_label = Label(self,text = "Lozinka:", font = (20))
         self.password_entry = Entry(self,show = "*",width= 20,font = (15))
-        self.register_button = Button(self,text = "Register",width=25, font = (20),command=self.register)
-        self.back_to_login_button = Button(self,text = "Back to login",width=25, font = (20),command= self.controller.switch_to_login)
+        self.register_button = Button(self,text = "Registriraj se",width=25, font = (20),command=self.register)
+        self.back_to_login_button = Button(self,text = "Natrag na prijavu",width=25, font = (20),command= self.controller.switch_to_login)
 
         self.register_label.grid(row=0,column=1,sticky="N" , pady = 10)
         self.name_label.grid(row=1,column=0,sticky="E")
@@ -30,7 +32,7 @@ class RegisterPage(Frame):
         self.register_button.grid(row=5,column=1,pady = 5)
         self.back_to_login_button.grid(row=6,column=1,pady=5)
 
-    def show(self):
+    def show(self, plant_id = None):
         self.master.update_idletasks()  # Ensure the window size is updated
         self.place(relx=0.5, rely=0.5, anchor="center")
     

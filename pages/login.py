@@ -6,13 +6,15 @@ class LoginPage(Frame):
         self.master = master
         self.controller = controller
 
-        self.login_label = Label(self,text = "Login page", font = (45))
-        self.username_label = Label(self,text = "Username:",font = (20))
+        
+
+        self.login_label = Label(self,text = "Prijava", font = (45))
+        self.username_label = Label(self,text = "Korisničko ime:",font = (20))
         self.username_entry = Entry(self, width= 22, font = (15))
-        self.password_label = Label(self,text = "Password:" , font = (20))
+        self.password_label = Label(self,text = "Lozinka:" , font = (20))
         self.password_entry = Entry(self,show = "*", width = 22 , font = (15))
-        self.login_button = Button(self,text = "Login",width=25, font = (20) , command=self.login)
-        self.register_button = Button(self,text = "Register",width=25, font = (20) ,command=self.controller.switch_to_register)
+        self.login_button = Button(self,text = "Prijavite se",width=25, font = (20) , command=self.login)
+        self.register_button = Button(self,text = "Regristracija",width=25, font = (20) ,command=self.controller.switch_to_register)
 
         self.login_label.grid(row=0,column=1,sticky="N",pady = 10)
         self.username_label.grid(row=1,column=0,sticky="E")
@@ -22,7 +24,7 @@ class LoginPage(Frame):
         self.login_button.grid(row=3,column=1,pady = 10)
         self.register_button.grid(row=4,column=1,pady = 5)
     
-    def show(self):
+    def show(self,plant_id = None):
         self.master.update_idletasks()  # Ensure the window size is updated
 
         self.place(relx=0.5, rely=0.5, anchor="center")

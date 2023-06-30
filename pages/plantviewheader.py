@@ -6,8 +6,10 @@ class PlantViewHeader(Frame):
         self.master = master
         self.controller = controller
 
+       
+
         self.header_label = Label(self, bg="lightgray",height= 2)
-        self.middle_label = Label(self, text="Plants",font = ('Arial',15),bg= "lightgray")
+        self.middle_label = Label(self, text="Biljke",font = ('Arial',15),bg= "lightgray")
         self.right_button = Button(self, text="Posude", font = ('Arial',10))
 
         self.pack_widgets()
@@ -23,7 +25,7 @@ class PlantViewHeader(Frame):
 
     
 
-    def show(self):
+    def show(self,plant_id = None):
         self.grid(sticky="nsew")
         
     
