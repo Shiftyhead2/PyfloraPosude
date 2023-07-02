@@ -16,45 +16,55 @@ class PlantsForm(Frame):
         self.plants_form_label = Label(self,text = "Biljke forma", font = (45),pady= 15)
         self.plants_form_label.grid(row=0, column=0 , sticky="n")
 
-        self.plants_form_name_label = Label(self,text = "Ime")
+        self.plants_form_name_label = Label(self,text = "Ime", font = (25))
         self.plants_form_name_label.grid(row=1, column=0 , sticky="n")
-        self.plants_form_name_entry = Entry(self, width= 22, font = (15))
-        self.plants_form_name_entry.grid(row=2, column=0 , sticky="n")
+        self.plants_form_name_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_name_entry.grid(row=2, column=0 , sticky="n", pady= 5)
 
-        self.plants_form_picture_label = Label(self,text = "Slika")
+        self.plants_form_picture_label = Label(self,text = "Slika",font = (25))
         self.plants_form_picture_label.grid(row=3, column=0 , sticky="n")
-        self.plants_form_picture_entry = Entry(self, width= 22, font = (15))
-        self.plants_form_picture_entry.grid(row=4, column=0 , sticky="n", padx= 5)
-        self.browse_button = Button(self, text="Odaberi sliku", command=self.browse_picture)
+        self.plants_form_picture_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_picture_entry.grid(row=4, column=0 , sticky="n", padx= 5,  pady= 5)
+        self.browse_button = Button(self, text="Odaberi sliku", command=self.browse_picture, font= (25))
         self.browse_button.grid(row=4, column=1, sticky="n")
 
-        self.plants_form_soil_label = Label(self,text = "Idealno tlo")
+        self.plants_form_soil_label = Label(self,text = "Minimalna pH vrijednost tla", font = (25))
         self.plants_form_soil_label.grid(row=5, column=0 , sticky="n")
-        self.plants_form_soil_entry = Entry(self, width= 22, font = (15))
-        self.plants_form_soil_entry.grid(row=6, column=0 , sticky="n")
+        self.plants_form_soil_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_soil_entry.grid(row=6, column=0 , sticky="n", pady= 5)
 
-        self.plants_form_temperature_label = Label(self,text = "Idealna temperatura")
-        self.plants_form_temperature_label.grid(row=7, column=0 , sticky="n")
-        self.plants_form_temperature_entry = Entry(self, width= 22, font = (15))
-        self.plants_form_temperature_entry.grid(row=8, column=0 , sticky="n")
+        self.plants_form_max_soil_label = Label(self,text = "Maximalna pH vrijednost tla", font = (25))
+        self.plants_form_max_soil_label.grid(row=7, column=0 , sticky="n")
+        self.plants_form_max_soil_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_max_soil_entry.grid(row=8, column=0 , sticky="n", pady= 5)
 
-        self.plants_form_light_label = Label(self,text = "Idealna svjetlost(u satima)")
-        self.plants_form_light_label.grid(row=9, column=0 , sticky="n")
-        self.plants_form_light_entry = Entry(self, width= 22, font = (15))
-        self.plants_form_light_entry.grid(row=10, column=0 , sticky="n")
+        self.plants_form_minimum_temperature_label = Label(self,text = "Minimalna idealna temperatura", font = (25))
+        self.plants_form_minimum_temperature_label.grid(row=9, column=0 , sticky="n")
+        self.plants_form_minimum_temperature_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_minimum_temperature_entry.grid(row=10, column=0 , sticky="n",pady= 5)
 
-        self.plants_form_substrate_label = Label(self,text = "Preporuka za dodavanje suprata")
-        self.plants_form_substrate_label.grid(row=11, column=0 , sticky="n")
-        self.plants_form_substrate_entry = Entry(self, width= 22, font = (15))
-        self.plants_form_substrate_entry.grid(row=12, column=0 , sticky="n")
+        self.plants_form_maximum_temperature_label = Label(self,text = "Maximalna idealna temperatura", font = (25))
+        self.plants_form_maximum_temperature_label.grid(row=11, column=0 , sticky="n")
+        self.plants_form_maximum_temperature_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_maximum_temperature_entry.grid(row=12, column=0 , sticky="n",pady= 5)
 
-        self.add_button = Button(self, command= self.create_or_update_plant)
-        self.add_button.grid(row = 13, column=0 , sticky= "n")
+        self.plants_form_light_label = Label(self,text = "Idealna svjetlost(u satima)", font = (25))
+        self.plants_form_light_label.grid(row = 13, column=0 , sticky="n")
+        self.plants_form_light_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_light_entry.grid(row=14, column=0 , sticky="n", pady= 5)
+
+        self.plants_form_substrate_label = Label(self,text = "Preporuka za dodavanje suprata", font = (25))
+        self.plants_form_substrate_label.grid(row=15, column=0 , sticky="n")
+        self.plants_form_substrate_entry = Entry(self, width= 25, font = (15))
+        self.plants_form_substrate_entry.grid(row=16, column=0 , sticky="n",pady= 5)
+
+        self.add_button = Button(self, command= self.create_or_update_plant, font= (25))
+        self.add_button.grid(row = 17, column=0 , sticky= "n")
 
         
 
-        self.back_button = Button(self, text="Natrag", command = self.controller.switch_to_plant_view)
-        self.back_button.grid(row = 14, column=0 , sticky= "n", pady= 5)
+        self.back_button = Button(self, text="Natrag", command = self.controller.switch_to_plant_view, font = (25))
+        self.back_button.grid(row = 18, column=0 , sticky= "n", pady= 5)
 
         
 
@@ -66,24 +76,31 @@ class PlantsForm(Frame):
         cursor.execute("SELECT * FROM plants WHERE id=?", (self.plant_id,))
         self.plant = cursor.fetchone()
 
+
+
+        self.plants_form_name_entry.delete(0,'end')
+
+        self.plants_form_picture_entry.delete(0,'end')
+
+
+        self.plants_form_soil_entry.delete(0,'end')
+
+        self.plants_form_max_soil_entry.delete(0,'end')
+
+
+
+        self.plants_form_minimum_temperature_entry.delete(0,'end')
+
+        self.plants_form_maximum_temperature_entry.delete(0,'end')
+
+
+        self.plants_form_light_entry.delete(0,'end')
+
+
+        self.plants_form_substrate_entry.delete(0,'end')
+
+
         if self.plant is None:
-          self.plants_form_name_entry.delete(0,'end')
-
-          self.plants_form_picture_entry.delete(0,'end')
-
-
-          self.plants_form_soil_entry.delete(0,'end')
-
-
-
-          self.plants_form_temperature_entry.delete(0,'end')
-
-
-          self.plants_form_light_entry.delete(0,'end')
-
-
-          self.plants_form_substrate_entry.delete(0,'end')
-
           self.add_button.config(text= "Dodaj biljku") 
         else:
           self.plants_form_name_entry.insert(0,self.plant[1])
@@ -93,15 +110,19 @@ class PlantsForm(Frame):
 
           self.plants_form_soil_entry.insert(0,self.plant[3])
 
+          self.plants_form_max_soil_entry.insert(0,self.plant[4])
 
 
-          self.plants_form_temperature_entry.insert(0,self.plant[4])
+
+          self.plants_form_minimum_temperature_entry.insert(0,self.plant[5])
+
+          self.plants_form_maximum_temperature_entry.insert(0,self.plant[6])
 
 
-          self.plants_form_light_entry.insert(0,self.plant[5])
+          self.plants_form_light_entry.insert(0,self.plant[7])
 
 
-          self.plants_form_substrate_entry.insert(0,self.plant[6])
+          self.plants_form_substrate_entry.insert(0,self.plant[8])
 
           self.add_button.config(text = "Ažurijaj biljku")
           
@@ -116,14 +137,16 @@ class PlantsForm(Frame):
         self.name = self.plants_form_name_entry.get()
         self.picture_path = self.plants_form_picture_entry.get()
         self.soil = self.plants_form_soil_entry.get()
-        self.temperature = self.plants_form_temperature_entry.get()
+        self.max_soil = self.plants_form_max_soil_entry.get()
+        self.min_temperature = self.plants_form_minimum_temperature_entry.get()
+        self.max_temperature = self.plants_form_maximum_temperature_entry.get()
         self.light = self.plants_form_light_entry.get()
         self.substrate = self.plants_form_substrate_entry.get()
 
         if self.plant is None:
-            self.controller.add_or_update_plants(self.name,self.picture_path,self.soil,self.temperature,self.light,self.substrate, self.plant)
+            self.controller.add_or_update_plants(self.name,self.picture_path,self.soil,self.max_soil,self.min_temperature,self.max_temperature,self.light,self.substrate, self.plant)
         else:
-            self.controller.add_or_update_plants(self.name,self.picture_path,self.soil,self.temperature,self.light,self.substrate, self.plant[0])
+            self.controller.add_or_update_plants(self.name,self.picture_path,self.soil,self.max_soil,self.min_temperature,self.max_temperature,self.light,self.substrate, self.plant[0])
 
         
         self.plants_form_name_entry.delete(0,'end')
@@ -133,9 +156,13 @@ class PlantsForm(Frame):
 
         self.plants_form_soil_entry.delete(0,'end')
 
+        self.plants_form_max_soil_entry.delete(0,'end')
 
 
-        self.plants_form_temperature_entry.delete(0,'end')
+
+        self.plants_form_minimum_temperature_entry.delete(0,'end')
+
+        self.plants_form_maximum_temperature_entry.delete(0,'end')
 
 
         self.plants_form_light_entry.delete(0,'end')

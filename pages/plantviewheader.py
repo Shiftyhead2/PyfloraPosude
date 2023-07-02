@@ -9,8 +9,8 @@ class PlantViewHeader(Frame):
        
 
         self.header_label = Label(self, bg="lightgray",height= 2)
-        self.middle_label = Label(self, text="Biljke",font = ('Arial',15),bg= "lightgray")
-        self.right_button = Button(self, text="Posude", font = ('Arial',10))
+        self.middle_label = Label(self, text="Evidencija biljka",font = ('Arial',20),bg= "lightgray")
+        self.right_button = Button(self, text="Posude", font = ('Arial',15))
 
         self.pack_widgets()
 

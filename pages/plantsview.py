@@ -1,4 +1,5 @@
 from tkinter import Frame,Label,Button,messagebox
+from PIL import Image, ImageTk
 import sqlite3
 
 class PlantsView(Frame):
@@ -11,10 +12,9 @@ class PlantsView(Frame):
 
         self.plant_buttons = []
 
-        self.plants_label = Label(self,text = "Evidencija biljka", font = (45))
-
-        self.plants_label.grid(row=0, column= 1, sticky= "N")
-        self.add_plant_button = Button(self, text="Dodaj novu biljku", command = self.controller.switch_to_plant_form)
+        
+        self.add_plant_button = Button(self, text="Dodaj novu biljku", font= (25), command = self.controller.switch_to_plant_form)
+        
 
         
 
@@ -30,15 +30,33 @@ class PlantsView(Frame):
        cursor.execute("SELECT id,name,picture FROM plants")
        plants = cursor.fetchall()
 
+
+       max_buttons_per_row = 3
+       num_buttons = len(plants)
+       num_rows = (num_buttons + max_buttons_per_row - 1) // max_buttons_per_row
+
+
        conn.close()
 
        for index, plant in enumerate(plants):
-            button = Button(self, text=plant[1], command=lambda p=plant: self.show_plant_details(p[0],p[1],p[2]))
-            button.grid(row=index + 1, column=1, pady=5)
+            row = index // max_buttons_per_row + 1
+            column = index % max_buttons_per_row + 1
+
+            image_path = plant[2]
+            image = Image.open(image_path)
+
+            image = image.resize((95, 95))
+
+            photo = ImageTk.PhotoImage(image)
+
+            button = Button(self, text=plant[1], image=photo, command=lambda p=plant: self.show_plant_details(p[0],p[1],p[2]))
+            button.image = photo
+            button.config(compound="left", padx= 10, font = (25))
+            button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)
             self.plant_buttons.append(button)
       
        
-       self.add_plant_button.grid(row=len(self.plant_buttons) + 1, column=1, pady=10)
+       self.add_plant_button.grid(row=num_rows + 1,columnspan=max_buttons_per_row, column=1, sticky= "WE", pady=10)
     
     def show_plant_details(self, plant_id, plant_name, plant_picture_location):
 
