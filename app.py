@@ -285,15 +285,20 @@ class AppController:
         # Switches to the plant view
         self.switch_to_plant_view()
     
-    def delete_the_plant(self):
+    def delete_the_plant(self,plant_name):
         conn = sqlite3.connect(self.db_plant_path)
         cursor = conn.cursor()
 
+
         try:
+            self.delete_picture_locally(plant_name)
             cursor.execute('DELETE FROM plants WHERE id= ?' ,(self.plant_id,))
             conn.commit()
             messagebox.showinfo("Biljka izbrisana!" , "Uspješno ste izbrisali biljku!")
             self.switch_to_plant_view()
+        except OSError as e:
+            messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
+            self.switch_to_individual_plant_view()
         except sqlite3.Error as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
             self.switch_to_individual_plant_view()
@@ -317,6 +322,17 @@ class AppController:
             print("Files are the same")
 
         return file_path
+    
+    def delete_picture_locally(self,plant_name):
+        filename = f"{plant_name}.{IMAGES_EXTENSION}"
+
+        file_path = os.path.join(IMAGES_FOLDER, filename)
+
+        try:
+            os.remove(file_path)
+        except OSError as e:
+            return e
+
 
         
     

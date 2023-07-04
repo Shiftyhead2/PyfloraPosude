@@ -98,7 +98,7 @@ class IndividualPlantView(Frame):
 
         if confirmed:
             self.controller.plant_id = self.plant_id
-            self.controller.delete_the_plant()
+            self.controller.delete_the_plant(self.plant[0])
         
        
         
