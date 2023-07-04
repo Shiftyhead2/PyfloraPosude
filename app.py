@@ -92,6 +92,7 @@ class AppController:
     def switch_to_plant_form(self):
         self.switch_to_page("plants_form")
 
+    # Function to switch to the individual plant view (aka a single plant selected from the plants view)
     def switch_to_individual_plant_view(self):
         self.switch_to_page("plant_view_header","plant_view")
         
@@ -285,23 +286,32 @@ class AppController:
         # Switches to the plant view
         self.switch_to_plant_view()
     
+
+    # Function for deleting the plant
     def delete_the_plant(self,plant_name):
+        # Connects to the plants database and creates a cursor for executing SQL commands in the database
         conn = sqlite3.connect(self.db_plant_path)
         cursor = conn.cursor()
 
-
+        
         try:
+            # First it tries to delete the local picture file in this app
             self.delete_picture_locally(plant_name)
+            #Then tries to delete the actual plant from the database
             cursor.execute('DELETE FROM plants WHERE id= ?' ,(self.plant_id,))
+            # If successfull commits the changes, shows the message box and then switches to the plant view
             conn.commit()
             messagebox.showinfo("Biljka izbrisana!" , "Uspješno ste izbrisali biljku!")
             self.switch_to_plant_view()
+        # If there is an error during the deletion of the local picture file in this app then it shows an error  and switches back to the actual plant   
         except OSError as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
             self.switch_to_individual_plant_view()
+        # If there is any errors when doing something with the SQlite 3 database then it shows an error and switches back to the actual plant
         except sqlite3.Error as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
             self.switch_to_individual_plant_view()
+        # Closes the connection regradless if there is an error or not
         finally:
             conn.close()
         
@@ -323,13 +333,18 @@ class AppController:
 
         return file_path
     
+    # Function for deleting the local image
     def delete_picture_locally(self,plant_name):
-        filename = f"{plant_name}.{IMAGES_EXTENSION}"
+         # Generate a unique filename based on the plant name
+        filename = f"{plant_name}.{IMAGES_EXTENSION}" # Change the extension as per the given image format
 
+         # Construct the full file path
         file_path = os.path.join(IMAGES_FOLDER, filename)
 
         try:
+            # Try deleting the image
             os.remove(file_path)
+        # Return an error if there is an error
         except OSError as e:
             return e
 
