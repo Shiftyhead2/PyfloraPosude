@@ -18,9 +18,9 @@ class PlantViewHeader(Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
-        self.header_label.grid(row=0, column=0, columnspan=3, sticky="nsew")
+        self.header_label.grid(row=0, column=0, columnspan=3, sticky="NSEW")
         self.middle_label.grid(row=0, column=1)
-        self.right_button.grid(row=0, column=2, sticky="e" , padx=10)
+        self.right_button.grid(row=0, column=2, sticky="E" , padx=10)
 
 
     

@@ -66,6 +66,8 @@ class AppController:
             # Assigns the current pages list to the pages list
             self.current_pages = pages
 
+            print(self.current_pages)
+
             # Loops throught all the new assigned pages in the current pages list and shows them passing the plant_id variable
             for page in self.current_pages:
                 page.show(self.plant_id)
@@ -89,6 +91,9 @@ class AppController:
     # Function to switch to the plant form.
     def switch_to_plant_form(self):
         self.switch_to_page("plants_form")
+
+    def switch_to_individual_plant_view(self):
+        self.switch_to_page("plant_view_header","plant_view")
         
     
     # Function to create the plant table
@@ -158,8 +163,8 @@ class AppController:
                 INSERT INTO users(name,surname,username,password)
                 VALUES(?,?,?,?)
             ''',(name,surname,username,hashed_password.decode('utf-8')))
-        except:
-            messagebox.showerror("Registracija ne uspješna!","Nešto je otišlo po zlu!")
+        except sqlite3.Error as e:
+            messagebox.showerror("Registracija ne uspješna!",f"Nešto je otišlo po zlu: {e}")
             return
         else:
              # Commits the changes to the users database and then closes the connection to the SQL database
@@ -187,8 +192,8 @@ class AppController:
         # and then fetches the first result and then caches to the result variable
         try:
             cursor.execute("SELECT password FROM users WHERE username=?",(username,))
-        except:
-            messagebox.showerror("Prijava nije uspjela!", "Nešto je otišlo po zlu!")
+        except sqlite3.Error as e:
+            messagebox.showerror("Prijava nije uspjela!", f"Nešto je otišlo po zlu: {e}")
             return
         else:
             result = cursor.fetchone()
@@ -250,8 +255,8 @@ class AppController:
                     UPDATE plants SET name=?, picture=?, min_soil_pH=?, max_soil_pH = ?, ideal_min_temperature=?,ideal_max_temperature=?, ideal_light=?, substrate_recommendation=?
                     WHERE id=?
                 ''', (name, self.save_image_locally(picture,name), float(min_soil),float(max_soil), float(min_temperature),float(max_temperature), float(light), substrate, self.plant_id))
-            except:
-                messagebox.showerror("Greška!", "Nešto je otišlo po zlu!")
+            except sqlite3.Error as e:
+                messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
                 conn.close()
                 return
             else:
@@ -264,8 +269,8 @@ class AppController:
                     INSERT INTO plants (name, picture, min_soil_pH,max_soil_ph, ideal_min_temperature,ideal_max_temperature, ideal_light, substrate_recommendation)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (name, self.save_image_locally(picture,name), float(min_soil),float(max_soil), float(min_temperature),float(max_temperature), float(light), substrate))
-            except:
-                messagebox.showerror("Greška!", "Nešto je otišlo po zlu!")
+            except sqlite3.Error as e:
+                messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
                 conn.close()
                 return
             else:
@@ -279,6 +284,23 @@ class AppController:
         
         # Switches to the plant view
         self.switch_to_plant_view()
+    
+    def delete_the_plant(self):
+        conn = sqlite3.connect(self.db_plant_path)
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute('DELETE FROM plants WHERE id= ?' ,(self.plant_id,))
+            conn.commit()
+            messagebox.showinfo("Biljka izbrisana!" , "Uspješno ste izbrisali biljku!")
+            self.switch_to_plant_view()
+        except sqlite3.Error as e:
+            messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
+            self.switch_to_individual_plant_view()
+        finally:
+            conn.close()
+        
+    
     
     # Function for saving the images locally (AKA in this applications folder)
     def save_image_locally(self, picture, plant_name):
