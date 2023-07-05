@@ -19,33 +19,36 @@ class IndividualPlantView(Frame):
         self.plant_soil_ph_label = Label(self)
         self.plant_soil_ph_label.grid(row = 2 , column= 2, sticky= "W")
 
+        self.plant_moisture_label = Label(self)
+        self.plant_moisture_label.grid(row=3,column = 2,  sticky= "W")
+
         self.plant_temperature_label = Label(self)
-        self.plant_temperature_label.grid(row = 3 , column= 2, sticky= "W")
+        self.plant_temperature_label.grid(row = 4 , column= 2, sticky= "W")
 
         self.plant_light_label = Label(self)
-        self.plant_light_label.grid(row = 4 , column= 2, sticky= "W")
+        self.plant_light_label.grid(row = 5 , column= 2, sticky= "W")
 
         self.plant_substrate_label = Label(self)
-        self.plant_substrate_label.grid(row = 5, column= 2 , sticky= "W")
+        self.plant_substrate_label.grid(row = 6, column= 2 , sticky= "W")
 
         self.plant_image = Label(self)
-        self.plant_image.grid(row= 6,column= 2 , sticky= "W",pady= 5)
+        self.plant_image.grid(row= 7,column= 2 , sticky= "W",pady= 5)
 
         self.back_button = Button(self,text= "Natrag", command= self.controller.switch_to_plant_view, font = (25))
-        self.back_button.grid(row = 8, column= 2, sticky= "WE" , pady= 5)
+        self.back_button.grid(row = 10, column= 2, sticky= "WE" , pady= 5)
 
         self.update_button = Button(self,text= "Ažuriraj", command= self.update_plant, font = (25))
-        self.update_button.grid(row = 7, column= 2, sticky= "WE")
+        self.update_button.grid(row = 9, column= 2, sticky= "WE")
 
         self.delete_button = Button(self,text= "Izbriši biljku", command= self.delete_plant, font = (25))
-        self.delete_button.grid(row = 9, column= 2, sticky= "WE")
+        self.delete_button.grid(row = 11, column= 2, sticky= "WE")
         
         
 
 
     
 
-    def show(self,plant_id = None):
+    def show(self,plant_id = None, pot_id = None):
         self.master.update_idletasks()  # Ensure the window size is updated
 
         self.place(relx=0.4, rely=0.5,anchor="w")
@@ -62,16 +65,17 @@ class IndividualPlantView(Frame):
         cursor = conn.cursor()
 
         try:
-            cursor.execute("SELECT name,picture,min_soil_pH,max_soil_pH,ideal_min_temperature,ideal_max_temperature,ideal_light,substrate_recommendation FROM plants WHERE id=?",(self.plant_id,))
+            cursor.execute("SELECT name,picture,min_soil_pH,max_soil_pH,required_ground_moisture,ideal_min_temperature,ideal_max_temperature,ideal_light,substrate_recommendation FROM plants WHERE id=?",(self.plant_id,))
         except sqlite3.Error as e:
-            print(f"Something went wrong: {e}")
+            messagebox.showerror(f"Greška!", f"Nešto je otišlo po zlu: {e}")
         else:
             self.plant = cursor.fetchone()
             self.plant_name_label.config(text= self.plant[0], font = 65)
             self.plant_soil_ph_label.config(text = f"pH tla: {self.plant[2]} - {self.plant[3]} pH")
-            self.plant_temperature_label.config(text = f"temperatura: {self.plant[4]} - {self.plant[5]}°C")
-            self.plant_light_label.config(text = f"Potrebno joj je {int(self.plant[6])} sati svjetla dnevno")
-            self.plant_substrate_label.config(text = f"Preporuka substrata: {self.plant[7]}")
+            self.plant_moisture_label.config(text = f"Potrebna vlažnost: {self.plant[4]} mm")
+            self.plant_temperature_label.config(text = f"temperatura: {self.plant[5]} - {self.plant[6]}°C")
+            self.plant_light_label.config(text = f"Potrebna svjetlost: {self.plant[7]} luxa")
+            self.plant_substrate_label.config(text = f"Preporuka substrata: {self.plant[8]}")
 
             image_path = self.plant[1]
             image = Image.open(image_path)

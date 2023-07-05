@@ -32,7 +32,7 @@ class RegisterPage(Frame):
         self.register_button.grid(row=5,column=1,pady = 5)
         self.back_to_login_button.grid(row=6,column=1,pady=5)
 
-    def show(self, plant_id = None):
+    def show(self, plant_id = None, pot_id = None):
         self.master.update_idletasks()  # Ensure the window size is updated
         self.place(relx=0.5, rely=0.5, anchor="center")
     

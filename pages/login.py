@@ -24,7 +24,7 @@ class LoginPage(Frame):
         self.login_button.grid(row=3,column=1,pady = 10)
         self.register_button.grid(row=4,column=1,pady = 5)
     
-    def show(self,plant_id = None):
+    def show(self,plant_id = None, pot_id = None):
         self.master.update_idletasks()  # Ensure the window size is updated
 
         self.place(relx=0.5, rely=0.5, anchor="center")

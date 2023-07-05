@@ -60,16 +60,11 @@ class PlantsView(Frame):
        
     
     def show_plant_details(self, plant_id):
-
         self.controller.plant_id = plant_id
         self.controller.switch_to_individual_plant_view()
 
     
-  
-
-    
-
-    def show(self,plant_id = None):
+    def show(self,plant_id = None, pot_id = None):
       self.master.update_idletasks()  # Ensure the window size is updated
 
       self.place(relx=0.5, rely=0.5, anchor="center")

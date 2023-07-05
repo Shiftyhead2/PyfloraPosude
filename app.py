@@ -6,6 +6,9 @@ from pages.plantviewheader import PlantViewHeader
 from pages.plantsview import PlantsView
 from pages.plantsform import PlantsForm
 from pages.individualplantview import IndividualPlantView
+from pages.potviewheader import PotViewHeader
+from pages.potsview import PotsView
+from pages.potsform import PotsForm
 import sqlite3
 import os
 import bcrypt
@@ -25,11 +28,17 @@ class AppController:
         # Creates the correct file paths for various databases and then creates them. The file paths will look like this: database\{database}.db
         self.db_user_path = os.path.join(DATABASES_FOLDER,'users.db') 
         self.db_plant_path = os.path.join(DATABASES_FOLDER,'plants.db')
+        self.db_pot_path = os.path.join(DATABASES_FOLDER,"pots.db")
+        self.db_sensor_path = os.path.join(DATABASES_FOLDER,"sensors.db")
         self.create_user_table()
         self.create_plant_table()
+        self.create_pots_table()
+        self.create_sensors_table()
 
         # This is to keep track of the current plant ID for use in individual plant view and in the plant form
         self.plant_id = None
+
+        self.pot_id = None
 
         # This is a dictionary of all the pages for the application. All the pages are actually initialized when this app starts. 
         # The key is the name of the page and the value is the class itself
@@ -41,7 +50,10 @@ class AppController:
             "plant_view_header": PlantViewHeader(self.root,self),
             "plants_view": PlantsView(self.root,self),
             "plants_form": PlantsForm(self.root,self),
-            "plant_view": IndividualPlantView(self.root,self)
+            "plant_view": IndividualPlantView(self.root,self),
+            "pot_view_header":PotViewHeader(self.root,self),
+            "pots_view": PotsView(self.root,self),
+            "pot_form": PotsForm(self.root,self),
         }
 
         # Keeps track of the current shown pages in a list
@@ -68,9 +80,9 @@ class AppController:
 
             print(self.current_pages)
 
-            # Loops throught all the new assigned pages in the current pages list and shows them passing the plant_id variable
+            # Loops throught all the new assigned pages in the current pages list and shows them passing the plant_id and the pot_id variable
             for page in self.current_pages:
-                page.show(self.plant_id)
+                page.show(self.plant_id,self.pot_id)
         # Showns an error if a page doesn't exist in the pages dictionary or the pages list is empty
         else:
             messagebox.showerror("Critical Error!",f"One or more pages could not be found: {page_names}")
@@ -91,10 +103,17 @@ class AppController:
     # Function to switch to the plant form.
     def switch_to_plant_form(self):
         self.switch_to_page("plants_form")
+    
+    def switch_to_pot_form(self):
+        self.switch_to_page("pot_form")
 
     # Function to switch to the individual plant view (aka a single plant selected from the plants view)
     def switch_to_individual_plant_view(self):
         self.switch_to_page("plant_view_header","plant_view")
+    
+    def switch_to_pot_view(self):
+        self.switch_to_page("pot_view_header", "pots_view")
+        self.pot_id = None
         
     
     # Function to create the plant table
@@ -112,9 +131,10 @@ class AppController:
                 picture TEXT,
                 min_soil_pH REAL,
                 max_soil_pH REAL,
+                required_ground_moisture INT,
                 ideal_min_temperature REAL,
                 ideal_max_temperature REAL,
-                ideal_light REAL,
+                ideal_light INT,
                 substrate_recommendation TEXT
             )  
         ''')
@@ -138,6 +158,39 @@ class AppController:
             surname TEXT,
             username TEXT,
             password TEXT
+          )''')
+        
+        conn.commit()
+        conn.close()
+
+    # Function to create the pots table. It's indentical to the function that creates the plants table
+    def create_pots_table(self):
+        conn = sqlite3.connect(self.db_pot_path)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+          CREATE TABLE IF NOT EXISTS pots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            location TEXT,
+            plant_id INT,
+            status TEXT
+          )''')
+        
+        conn.commit()
+        conn.close()
+    
+    # Function to create the sensors table. It's indentical to the function that creates the plants table
+    def create_sensors_table(self):
+        conn = sqlite3.connect(self.db_sensor_path)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+          CREATE TABLE IF NOT EXISTS sensors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ground_moisture INT,
+            pH_ground FLOAT,
+            light_lux INT,
+            temperature FLOAT
           )''')
         
         conn.commit()
@@ -184,6 +237,8 @@ class AppController:
         if not username or not password:
             messagebox.showerror("Prijava nije uspjela!", "Molimo vas unesite sve podatke!")
             return
+        
+        
 
         # Connects to the users database and creates a cursor for executing SQL commands in the database
         conn = sqlite3.connect(self.db_user_path)
@@ -222,10 +277,10 @@ class AppController:
     
     # Function for creating or updating the plants. Takes in a name, picture location , minimum soil pH, maximum soil pH
     # minimum temperature , maximum temperature , light , substrate and the plant ID for updating the correct plant
-    def add_or_update_plants(self,name,picture,min_soil,max_soil,min_temperature,max_temperature,light,substrate,plant_id):
+    def add_or_update_plants(self,name,picture,min_soil,max_soil, required_moisture,min_temperature,max_temperature,light,substrate,plant_id):
 
         # If any of the parameters are empty or None then show an error and return(exit) out of the function
-        if not name or not picture or not min_soil or not max_soil or not min_temperature or not light or not substrate or not max_temperature:
+        if not name or not picture or not min_soil or not max_soil or not min_temperature or not light or not substrate or not max_temperature or not required_moisture:
             messagebox.showerror("Dodavanje ili ažuriranje biljke nije uspjelo!", "Molimo vas da unesete sve podatke!")
             return
         
@@ -234,11 +289,12 @@ class AppController:
         try:
             min_temperature = float(min_temperature)
             max_temperature = float(max_temperature)
-            light = float(light)
+            light = int(light)
             min_soil = float(min_soil)
             max_soil = float(max_soil)
+            required_moisture = int(required_moisture)
         except ValueError:
-            messagebox.showerror("Dodavanje ili ažuriranje biljke nije uspjelo!", "Unesite ispravne vrijednosti za tlo,  temperaturu i svjetlost!")
+            messagebox.showerror("Dodavanje ili ažuriranje biljke nije uspjelo!", "Unesite ispravne vrijednosti za tlo, vlažnost, temperaturu i svjetlost!")
             return
     
         # Assigns the AppController's plant_id to the passed plant_id    
@@ -248,14 +304,14 @@ class AppController:
         conn = sqlite3.connect(self.db_plant_path)
         cursor = conn.cursor()
 
-        # Checks if the AppControllers's plant_id is not None
-        if self.plant_id is not None:
+        # Checks if the AppControllers's plant_id is not None or 0
+        if self.plant_id is not None or 0:
             # If it isn't None then the cursor the function tries to execute the SQL command for updating the correct plant in the plants database
             try:
                 cursor.execute('''
-                    UPDATE plants SET name=?, picture=?, min_soil_pH=?, max_soil_pH = ?, ideal_min_temperature=?,ideal_max_temperature=?, ideal_light=?, substrate_recommendation=?
+                    UPDATE plants SET name=?, picture=?, min_soil_pH=?, max_soil_pH = ?, required_ground_moisture=?, ideal_min_temperature=?,ideal_max_temperature=?, ideal_light=?, substrate_recommendation=?
                     WHERE id=?
-                ''', (name, self.save_image_locally(picture,name), float(min_soil),float(max_soil), float(min_temperature),float(max_temperature), float(light), substrate, self.plant_id))
+                ''', (name, self.save_image_locally(picture,name), float(min_soil),float(max_soil),int(required_moisture), float(min_temperature),float(max_temperature), int(light), substrate, self.plant_id))
             except sqlite3.Error as e:
                 messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
                 conn.close()
@@ -267,9 +323,9 @@ class AppController:
             # If it is None then the cursor the function tries executes the SQL command for creating a new plant in the plants database
             try:
                 cursor.execute('''
-                    INSERT INTO plants (name, picture, min_soil_pH,max_soil_ph, ideal_min_temperature,ideal_max_temperature, ideal_light, substrate_recommendation)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (name, self.save_image_locally(picture,name), float(min_soil),float(max_soil), float(min_temperature),float(max_temperature), float(light), substrate))
+                    INSERT INTO plants (name, picture, min_soil_pH,max_soil_ph, required_ground_moisture, ideal_min_temperature,ideal_max_temperature, ideal_light, substrate_recommendation)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
+                ''', (name, self.save_image_locally(picture,name), float(min_soil),float(max_soil), int(required_moisture), float(min_temperature),float(max_temperature), int(light), substrate))
             except sqlite3.Error as e:
                 messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
                 conn.close()

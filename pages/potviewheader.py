@@ -1,6 +1,6 @@
 from tkinter import Frame,Label,Button
 
-class PlantViewHeader(Frame):
+class PotViewHeader(Frame):
     def __init__(self,master,controller):
         super().__init__(master)
         self.master = master
@@ -9,8 +9,8 @@ class PlantViewHeader(Frame):
        
 
         self.header_label = Label(self, bg="lightgray",height= 2)
-        self.middle_label = Label(self, text="Evidencija biljka",font = ('Arial',20),bg= "lightgray")
-        self.right_button = Button(self, text="Posude", font = ('Arial',15), command= self.controller.switch_to_pot_view)
+        self.middle_label = Label(self, text="Evidencija posuda",font = ('Arial',20),bg= "lightgray")
+        self.right_button = Button(self, text="Biljke", font = ('Arial',15), command= self.controller.switch_to_plant_view)
 
         self.pack_widgets()
 
