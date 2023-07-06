@@ -9,10 +9,12 @@ from pages.individualplantview import IndividualPlantView
 from pages.potviewheader import PotViewHeader
 from pages.potsview import PotsView
 from pages.potsform import PotsForm
+from pages.syncbutton import SyncButton
 import sqlite3
 import os
 import bcrypt
 import shutil
+import random
 
 IMAGES_FOLDER = "images"
 IMAGES_EXTENSION = "jpg"
@@ -54,6 +56,7 @@ class AppController:
             "pot_view_header":PotViewHeader(self.root,self),
             "pots_view": PotsView(self.root,self),
             "pot_form": PotsForm(self.root,self),
+            "sync_button":SyncButton(self.root,self),
         }
 
         # Keeps track of the current shown pages in a list
@@ -112,7 +115,7 @@ class AppController:
         self.switch_to_page("plant_view_header","plant_view")
     
     def switch_to_pot_view(self):
-        self.switch_to_page("pot_view_header", "pots_view")
+        self.switch_to_page("pot_view_header","sync_button", "pots_view")
         self.pot_id = None
         
     
@@ -277,7 +280,7 @@ class AppController:
     
     # Function for creating or updating the plants. Takes in a name, picture location , minimum soil pH, maximum soil pH
     # minimum temperature , maximum temperature , light , substrate and the plant ID for updating the correct plant
-    def add_or_update_plants(self,name,picture,min_soil,max_soil, required_moisture,min_temperature,max_temperature,light,substrate,plant_id):
+    def add_or_update_plants(self,name,picture,min_soil,max_soil, required_moisture,min_temperature,max_temperature,light,substrate,plant_id = None):
 
         # If any of the parameters are empty or None then show an error and return(exit) out of the function
         if not name or not picture or not min_soil or not max_soil or not min_temperature or not light or not substrate or not max_temperature or not required_moisture:
@@ -305,7 +308,7 @@ class AppController:
         cursor = conn.cursor()
 
         # Checks if the AppControllers's plant_id is not None or 0
-        if self.plant_id is not None or 0:
+        if self.plant_id is not None:
             # If it isn't None then the cursor the function tries to execute the SQL command for updating the correct plant in the plants database
             try:
                 cursor.execute('''
@@ -370,6 +373,63 @@ class AppController:
         # Closes the connection regradless if there is an error or not
         finally:
             conn.close()
+    
+    def sync_sensor(self):
+        conn = sqlite3.connect(self.db_sensor_path)
+        cursor = conn.cursor()
+
+        ground_moisture = random.randint(0, 100)
+        pH_ground = round(random.uniform(0.0, 14.0), 2)
+        light_day = random.randint(0, 12)
+        temperature = round(random.uniform(-20.0, 50.0), 2)
+        
+        try:
+            cursor.execute('''
+            INSERT INTO sensors (ground_moisture, pH_ground, light_lux, temperature)
+            VALUES (?, ?, ?, ?)
+        ''', (ground_moisture, pH_ground, light_day, temperature))
+        except sqlite3.Error as e:
+            messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
+        else:
+            messagebox.showinfo("Uspjeh!", "Uspješno ste dodali nove podatke sa sensora!")
+        finally:
+            conn.commit()
+    
+
+    def add_pot(self,location,plant_id,status,pot_id = None):
+        if not location or not plant_id:
+            messagebox.showerror("Greška!", "Molimo vas da unesete sve podatke!")
+            return
+
+
+        conn = sqlite3.connect(self.db_pot_path)
+        cursor = conn.cursor()
+
+
+        self.pot_id = pot_id
+
+        try:
+            if self.pot_id is not None and self.pot_id != 0:
+                cursor.execute('''UPDATE pots SET location = ?, plant_id = ?, status = ? WHERE id = ?''',
+                            (location, plant_id, status, self.pot_id))
+            else:
+                cursor.execute('''INSERT INTO pots (location, plant_id, status) VALUES (?, ?, ?)''',
+                             (location, plant_id, status))
+        except sqlite3.Error as e:
+            messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
+            conn.close()
+            return
+        else:
+            if self.pot_id is not None and self.pot_id != 0:
+                messagebox.showinfo("Uspjeh!", "Uspješno ste ažurirali posudu")
+            else:
+                messagebox.showinfo("Uspjeh!", "Uspješno ste dodali posudu")
+
+        conn.commit()
+        conn.close()
+
+        self.switch_to_pot_view()
+
         
     
     

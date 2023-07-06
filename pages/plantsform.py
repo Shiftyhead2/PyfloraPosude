@@ -160,8 +160,8 @@ class PlantsForm(Frame):
         self.substrate = self.plants_form_substrate_entry.get()
         self.required_moisture = self.plants_form_required_moisture_entry.get()
 
-        if self.plant is None or 0:
-            self.controller.add_or_update_plants(self.name,self.picture_path,self.soil,self.max_soil,self.required_moisture,self.min_temperature,self.max_temperature,self.light,self.substrate, self.plant)
+        if self.plant is None or self.plant == 0:
+            self.controller.add_or_update_plants(self.name,self.picture_path,self.soil,self.max_soil,self.required_moisture,self.min_temperature,self.max_temperature,self.light,self.substrate,self.plant)
             self.plants_form_name_entry.delete(0,'end')
 
             self.plants_form_picture_entry.delete(0,'end')

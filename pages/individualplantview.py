@@ -74,7 +74,7 @@ class IndividualPlantView(Frame):
             self.plant_soil_ph_label.config(text = f"pH tla: {self.plant[2]} - {self.plant[3]} pH")
             self.plant_moisture_label.config(text = f"Potrebna vlažnost: {self.plant[4]} mm")
             self.plant_temperature_label.config(text = f"temperatura: {self.plant[5]} - {self.plant[6]}°C")
-            self.plant_light_label.config(text = f"Potrebna svjetlost: {self.plant[7]} luxa")
+            self.plant_light_label.config(text = f"Potrebna svjetlost: {self.plant[7]} sati dnevno")
             self.plant_substrate_label.config(text = f"Preporuka substrata: {self.plant[8]}")
 
             image_path = self.plant[1]

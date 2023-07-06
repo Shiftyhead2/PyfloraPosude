@@ -47,7 +47,7 @@ class PotsView(Frame):
                 #image = image.resize((95, 95))
                 #photo = ImageTk.PhotoImage(image)
 
-                button = Button(self, text=f"Posuda #{pot[0]} \n Status: {pot[3]}", command=lambda p=pot: self.show_pot_details(p[0]))
+                button = Button(self, text=f"Posuda #{pot[0]} \n {pot[3]}", command=lambda p=pot: self.show_pot_details(p[0]))
                 #button.image = photo
                 button.config(compound="left", padx=10, font=(25))
                 button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)

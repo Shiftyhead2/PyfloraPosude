@@ -59,8 +59,12 @@ class PotsForm(Frame):
 
             plants = cursor2.fetchall()
             plant_options = [f"{id} - {name}" for id, name in plants]
-            plant_options.insert(0, "0 - Prazna")
+
+            if "0 - Prazna" not in plant_options:
+                plant_options.insert(0, "0 - Prazna")
+
             self.plant_dropdown['values'] = plant_options
+            self.plant_dropdown.current(0)
 
 
             if self.pot is None:
@@ -82,10 +86,74 @@ class PotsForm(Frame):
 
         print(self.location,self.plant_id)
 
+        conn_plants = sqlite3.connect(self.controller.db_plant_path)
+        cursor_plants = conn_plants.cursor()
+
+        cursor_plants.execute('SELECT * FROM plants WHERE id = ?', (self.plant_id,))
+        plant_details = cursor_plants.fetchone()
+
+        if plant_details and self.plant_id != 0:
+            min_soil_pH = plant_details[3]
+            max_soil_pH = plant_details[4]
+            required_ground_moisture = plant_details[5]
+            ideal_min_temperature = plant_details[6]
+            ideal_max_temperature = plant_details[7]
+            ideal_light = plant_details[8]
+
+            conn_sensors = sqlite3.connect(self.controller.db_sensor_path)
+            cursor_sensors = conn_sensors.cursor()
+            cursor_sensors.execute('SELECT * FROM sensors ORDER BY id DESC LIMIT 1')
+            last_measurement = cursor_sensors.fetchone()
+
+            if last_measurement:
+                ground_moisture = last_measurement[1]
+                pH_ground = last_measurement[2]
+                light_lux = last_measurement[3]
+                temperature = last_measurement[4]
+            
+                # Compare values with the plant requirements
+                if min_soil_pH <= pH_ground <= max_soil_pH:
+                    soil_pH_status = "Optimalna"
+                else:
+                    soil_pH_status = "Suboptimalna"
+            
+                if ground_moisture >= required_ground_moisture:
+                    moisture_status = "Dovoljno vode"
+                else:
+                    moisture_status = "Treba vode"
+            
+                if ideal_min_temperature <= temperature <= ideal_max_temperature:
+                    temperature_status = "Idealna"
+                else:
+                    temperature_status = "Suboptimalna"
+            
+                if light_lux >= ideal_light:
+                    light_status = "Dovoljno"
+                else:
+                    light_status = "Ne dovoljno"
+            
+                self.status_text = f"Status: \n pH tla: {soil_pH_status}\nMokrost tla: {moisture_status}\nTemperatura: {temperature_status}\nSvjetlost: {light_status}"
+            else:
+                print("No measurements found in the sensors database")
+                self.status_text = f"Status: \n Nema podataka"
+            conn_sensors.close()
+        else:
+            print("Plant details not found in the plants database")
+            self.status_text = f"Status: \nPrazna posuda"
+        conn_plants.close()
+
+        print(self.status_text)
+
+        if self.pots_id is not None or self.pots_id != 0:
+            self.controller.add_pot(self.location,self.plant_id,self.status_text,self.pots_id)
+        else:
+            self.controller.add_pot(self.location,self.plant_id,self.status_text)
+            
         self.location_label_entry.delete(0,'end')
         self.plant_dropdown.delete(0, 'end')
 
-        return
+        self.status_text = None
+
         
             
 
