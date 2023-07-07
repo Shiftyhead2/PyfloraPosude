@@ -138,7 +138,7 @@ class PlantsForm(Frame):
 
                 self.plants_form_substrate_entry.insert(0,self.plant[9])
 
-                self.add_button.config(text = "Ažurijaj biljku")
+                self.add_button.config(text = "Ažuriraj biljku")
         finally:
             conn.close()
           

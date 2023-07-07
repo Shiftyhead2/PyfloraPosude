@@ -23,7 +23,7 @@ class PotsView(Frame):
        cursor = conn.cursor()
 
        try:
-          cursor.execute("SELECT id,location,plant_id,status FROM pots")
+          cursor.execute("SELECT id,location,plant_name, plant_id, plant_picture_location,status FROM pots")
        except sqlite3.Error as e:
           print(f"Something went wrong: {e}")
        else: 
@@ -38,20 +38,31 @@ class PotsView(Frame):
           num_buttons = len(pots)
           num_rows = (num_buttons + max_buttons_per_row - 1) // max_buttons_per_row
 
+          
+
           for index, pot in enumerate(pots):
                 row = index // max_buttons_per_row + 1
                 column = index % max_buttons_per_row + 1
-
-                #image_path = pot[2]
-                #image = Image.open(image_path)
-                #image = image.resize((95, 95))
-                #photo = ImageTk.PhotoImage(image)
-
-                button = Button(self, text=f"Posuda #{pot[0]} \n {pot[3]}", command=lambda p=pot: self.show_pot_details(p[0]))
-                #button.image = photo
-                button.config(compound="left", padx=10, font=(25))
-                button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)
-
+                
+                if pot[3] > 0:
+                    image_path = pot[4]
+                    if image_path:
+                     image = Image.open(image_path)
+                     image = image.resize((95, 95))
+                     photo = ImageTk.PhotoImage(image)
+                     button = Button(self, text=f"Posuda #{pot[0]}", command=lambda p=pot: self.show_pot_details(p[0]))
+                     button.image = photo
+                     button.config(compound="left", image=photo, padx=10, font=(25))
+                     button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)
+                    else:
+                       button = Button(self, text=f"Posuda #{pot[0]}", command=lambda p=pot: self.show_pot_details(p[0]))
+                       button.config(compound="left", padx=10, font=(25))
+                       button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)
+                else:
+                     button = Button(self, text=f"Posuda #{pot[0]} \n {pot[5]}", command=lambda p=pot: self.show_pot_details(p[0]))
+                     button.config(compound="left", padx=10, font=(25))
+                     button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)
+                
                 self.pot_buttons.append(button)
 
           self.add_pot_button.grid(row=num_rows + 1,columnspan=max_buttons_per_row, column=1, sticky= "WE", pady=10)
@@ -61,6 +72,8 @@ class PotsView(Frame):
     
     def show_pot_details(self, pot_id):
         self.controller.pot_id = pot_id
+
+        self.controller.switch_to_individual_pot_view()
 
     
     def show(self,plant_id = None, pot_id = None):

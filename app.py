@@ -10,6 +10,7 @@ from pages.potviewheader import PotViewHeader
 from pages.potsview import PotsView
 from pages.potsform import PotsForm
 from pages.syncbutton import SyncButton
+from pages.individualpotview import IndividualPotView
 import sqlite3
 import os
 import bcrypt
@@ -56,6 +57,7 @@ class AppController:
             "pot_view_header":PotViewHeader(self.root,self),
             "pots_view": PotsView(self.root,self),
             "pot_form": PotsForm(self.root,self),
+            "pot_view":IndividualPotView(self.root,self),
             "sync_button":SyncButton(self.root,self),
         }
 
@@ -81,7 +83,7 @@ class AppController:
             # Assigns the current pages list to the pages list
             self.current_pages = pages
 
-            print(self.current_pages)
+            #print(self.current_pages)
 
             # Loops throught all the new assigned pages in the current pages list and shows them passing the plant_id and the pot_id variable
             for page in self.current_pages:
@@ -117,6 +119,9 @@ class AppController:
     def switch_to_pot_view(self):
         self.switch_to_page("pot_view_header","sync_button", "pots_view")
         self.pot_id = None
+    
+    def switch_to_individual_pot_view(self):
+        self.switch_to_page("pot_view_header","pot_view")
         
     
     # Function to create the plant table
@@ -176,6 +181,8 @@ class AppController:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             location TEXT,
             plant_id INT,
+            plant_name TEXT,
+            plant_picture_location TEXT,       
             status TEXT
           )''')
         
@@ -352,14 +359,19 @@ class AppController:
         conn = sqlite3.connect(self.db_plant_path)
         cursor = conn.cursor()
 
+        conn2 = sqlite3.connect(self.db_pot_path)
+        cursor2 = conn2.cursor()
+
         
         try:
             # First it tries to delete the local picture file in this app
             self.delete_picture_locally(plant_name)
             #Then tries to delete the actual plant from the database
             cursor.execute('DELETE FROM plants WHERE id= ?' ,(self.plant_id,))
+            cursor2.execute('''UPDATE pots SET plant_id = ?, plant_name=?, plant_picture_location= ?,  status = ? WHERE plant_id = ?''',(0,"","","Status:Prazna posuda", self.plant_id))
             # If successfull commits the changes, shows the message box and then switches to the plant view
             conn.commit()
+            conn2.commit()
             messagebox.showinfo("Biljka izbrisana!" , "Uspješno ste izbrisali biljku!")
             self.switch_to_plant_view()
         # If there is an error during the deletion of the local picture file in this app then it shows an error  and switches back to the actual plant   
@@ -373,10 +385,13 @@ class AppController:
         # Closes the connection regradless if there is an error or not
         finally:
             conn.close()
+            conn2.close()
     
     def sync_sensor(self):
         conn = sqlite3.connect(self.db_sensor_path)
         cursor = conn.cursor()
+
+
 
         ground_moisture = random.randint(0, 100)
         pH_ground = round(random.uniform(0.0, 14.0), 2)
@@ -388,6 +403,7 @@ class AppController:
             INSERT INTO sensors (ground_moisture, pH_ground, light_lux, temperature)
             VALUES (?, ?, ?, ?)
         ''', (ground_moisture, pH_ground, light_day, temperature))
+            
         except sqlite3.Error as e:
             messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
         else:
@@ -396,7 +412,7 @@ class AppController:
             conn.commit()
     
 
-    def add_pot(self,location,plant_id,status,pot_id = None):
+    def add_pot(self,location,plant_id,plant_name,plant_picture_location,status, pot_id = None):
         if not location or not plant_id:
             messagebox.showerror("Greška!", "Molimo vas da unesete sve podatke!")
             return
@@ -410,11 +426,11 @@ class AppController:
 
         try:
             if self.pot_id is not None and self.pot_id != 0:
-                cursor.execute('''UPDATE pots SET location = ?, plant_id = ?, status = ? WHERE id = ?''',
-                            (location, plant_id, status, self.pot_id))
+                cursor.execute('''UPDATE pots SET location = ?, plant_id = ?, plant_name=?, plant_picture_location= ?,  status = ? WHERE id = ?''',
+                            (location, plant_id, plant_name, plant_picture_location, status, self.pot_id))
             else:
-                cursor.execute('''INSERT INTO pots (location, plant_id, status) VALUES (?, ?, ?)''',
-                             (location, plant_id, status))
+                cursor.execute('''INSERT INTO pots (location, plant_id, plant_name, plant_picture_location, status) VALUES (?,?,?,?,?)''',
+                             (location, plant_id, plant_name, plant_picture_location, status))
         except sqlite3.Error as e:
             messagebox.showerror("Greška!", f"Nešto je otišlo po zlu: {e}")
             conn.close()
@@ -429,7 +445,28 @@ class AppController:
         conn.close()
 
         self.switch_to_pot_view()
+    
 
+      # Function for deleting the plant
+    def delete_the_pot(self):
+        # Connects to the plants database and creates a cursor for executing SQL commands in the database
+        conn = sqlite3.connect(self.db_pot_path)
+        cursor = conn.cursor()
+        
+        try:
+            #Then tries to delete the actual plant from the database
+            cursor.execute('DELETE FROM pots WHERE id= ?' ,(self.pot_id,))
+            # If successfull commits the changes, shows the message box and then switches to the plant view
+            conn.commit()
+            messagebox.showinfo("Posuda izbrisana!" , "Uspješno ste izbrisali posudu!")
+            self.switch_to_pot_view()
+        # If there is any errors when doing something with the SQlite 3 database then it shows an error and switches back to the actual plant
+        except sqlite3.Error as e:
+            messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju posude: {e}")
+            self.switch_to_individual_pot_view()
+        # Closes the connection regradless if there is an error or not
+        finally:
+            conn.close()
         
     
     

@@ -64,15 +64,26 @@ class PotsForm(Frame):
                 plant_options.insert(0, "0 - Prazna")
 
             self.plant_dropdown['values'] = plant_options
-            self.plant_dropdown.current(0)
+
+            if self.pot is not None:
+                selected_option = f"{self.pot[2]} - {self.pot[3]}" 
+                if selected_option in plant_options:
+                    self.plant_dropdown.current(plant_options.index(selected_option))
+                else:
+                    # Handle case when the selected plant_id is not found in the dropdown options
+                    self.plant_dropdown.current(0)
+            else:
+                self.plant_dropdown.current(0)
 
 
             if self.pot is None:
+                self.pots_form_label.config(text = "Posuda forma")
                 self.add_button.config(text= "Dodaj Posudu") 
             else:
+                self.pots_form_label.config(text= f"Posuda forma: Posuda #{self.pot[0]}")
                 self.location_label_entry.insert(0,self.pot[1])
 
-                self.add_button.config(text = "Ažurijaj Posudu")
+                self.add_button.config(text = "Ažuriraj Posudu")
         finally:
             conn.close()
             conn2.close()
@@ -84,7 +95,11 @@ class PotsForm(Frame):
         self.plant_selection = self.plant_dropdown.get()
         self.plant_id = self.plant_selection.split()[0]
 
-        print(self.location,self.plant_id)
+        self.plant_name = ""
+
+        self.plant_picture_location = ""
+
+        #print(self.location,self.plant_id)
 
         conn_plants = sqlite3.connect(self.controller.db_plant_path)
         cursor_plants = conn_plants.cursor()
@@ -93,6 +108,8 @@ class PotsForm(Frame):
         plant_details = cursor_plants.fetchone()
 
         if plant_details and self.plant_id != 0:
+            self.plant_name = plant_details[1]
+            self.plant_picture_location = plant_details[2]
             min_soil_pH = plant_details[3]
             max_soil_pH = plant_details[4]
             required_ground_moisture = plant_details[5]
@@ -134,25 +151,30 @@ class PotsForm(Frame):
             
                 self.status_text = f"Status: \n pH tla: {soil_pH_status}\nMokrost tla: {moisture_status}\nTemperatura: {temperature_status}\nSvjetlost: {light_status}"
             else:
-                print("No measurements found in the sensors database")
+                #print("No measurements found in the sensors database")
                 self.status_text = f"Status: \n Nema podataka"
             conn_sensors.close()
         else:
-            print("Plant details not found in the plants database")
+            #print("Plant details not found in the plants database")
             self.status_text = f"Status: \nPrazna posuda"
         conn_plants.close()
 
-        print(self.status_text)
+        #print(self.status_text)
 
         if self.pots_id is not None or self.pots_id != 0:
-            self.controller.add_pot(self.location,self.plant_id,self.status_text,self.pots_id)
+            self.controller.add_pot(self.location,self.plant_id, self.plant_name, self.plant_picture_location,self.status_text,self.pots_id)
         else:
-            self.controller.add_pot(self.location,self.plant_id,self.status_text)
+            self.controller.add_pot(self.location,self.plant_id,self.plant_name, self.plant_picture_location, self.status_text)
             
         self.location_label_entry.delete(0,'end')
         self.plant_dropdown.delete(0, 'end')
 
         self.status_text = None
+
+        
+
+
+        
 
         
             
