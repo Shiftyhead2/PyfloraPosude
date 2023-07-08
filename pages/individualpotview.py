@@ -80,7 +80,7 @@ class IndividualPotView(Frame):
             messagebox.showerror(f"Greška!", f"Nešto je otišlo po zlu: {e}")
         else:
             self.pot = cursor.fetchone()
-            print(self.measurements)
+            #print(self.measurements)
             self.pot_location_label.config(text= f"Lokacija: {self.pot[1]}")
             self.pot_label.config(text = f"Posuda #{self.pot[0]}", font = (65))
             if self.pot[3] > 0:
@@ -108,7 +108,7 @@ class IndividualPotView(Frame):
         else:
             self.measurements = cursor.fetchall()
             # Create labels to display the measurements
-            if len(self.measurements) != 0:
+            if len(self.measurements) > 0:
                 for i, measurement in enumerate(self.measurements):
                     sensor_id, ground_moisture, pH_ground, light_lux, temperature = measurement
 
