@@ -17,7 +17,7 @@ class PlantsView(Frame):
         
 
        
-    
+    # Function for getting all the plants in the database and then displaying them all as buttons in a grid like manner
     def load_and_create_plant_buttons(self):
        conn = sqlite3.connect(self.controller.db_plant_path)
        cursor = conn.cursor()
@@ -34,7 +34,7 @@ class PlantsView(Frame):
                 button.destroy()
           self.plant_buttons = []
 
-          max_buttons_per_row = 3
+          max_buttons_per_row = 3 # Maximum number of buttons that can be in a row.Switches to a new column if the number of buttons is higher.
           num_buttons = len(plants)
           num_rows = (num_buttons + max_buttons_per_row - 1) // max_buttons_per_row
 
@@ -53,7 +53,7 @@ class PlantsView(Frame):
                 button.grid(row=row, column=column, padx=5, sticky="WE", pady=5)
 
                 self.plant_buttons.append(button)
-
+          
           self.add_plant_button.grid(row=num_rows + 1,columnspan=max_buttons_per_row, column=1, sticky= "WE", pady=10)
        finally:
           conn.close()    

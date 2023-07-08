@@ -41,13 +41,15 @@ class AppController:
         # This is to keep track of the current plant ID for use in individual plant view and in the plant form
         self.plant_id = None
 
+        # Same thing for pots as plants.
         self.pot_id = None
 
         # This is a dictionary of all the pages for the application. All the pages are actually initialized when this app starts. 
         # The key is the name of the page and the value is the class itself
         self.pages = {
             # When creating a page class like this there are a couple of parametres. The first one is the master which is the root window of the GUI application and the second one
-            # is the controller which is the AppController class
+            # is the controller which is the AppController class, additionally some views may take optional parametres which are required for certain operation ,but not really required
+            # for them to work normally as they are assigned a default value by the page class itself
             "login": LoginPage(self.root,self),
             "register":RegisterPage(self.root,self),
             "plant_view_header": PlantViewHeader(self.root,self),
@@ -83,9 +85,12 @@ class AppController:
             # Assigns the current pages list to the pages list
             self.current_pages = pages
 
+            # For debugging purposes. Prints the current list of pages
             #print(self.current_pages)
 
-            # Loops throught all the new assigned pages in the current pages list and shows them passing the plant_id and the pot_id variable
+            # Loops throught all the new assigned pages in the current pages list and shows them passing the plant_id and the pot_id variable which are actually optional as 
+            # they are assigned by default as None in some pages as not all pages require these variables for them to work. Only plants need the plant_id variable to work correctly 
+            # and same goes for the pots.
             for page in self.current_pages:
                 page.show(self.plant_id,self.pot_id)
         # Showns an error if a page doesn't exist in the pages dictionary or the pages list is empty
@@ -109,6 +114,7 @@ class AppController:
     def switch_to_plant_form(self):
         self.switch_to_page("plants_form")
     
+    # Function to switch to the pot form.
     def switch_to_pot_form(self):
         self.switch_to_page("pot_form")
 
@@ -116,10 +122,12 @@ class AppController:
     def switch_to_individual_plant_view(self):
         self.switch_to_page("plant_view_header","plant_view")
     
+    # Function to switch to the view where all the pots are displayed. Also assigns the pot_id variable to None
     def switch_to_pot_view(self):
         self.switch_to_page("pot_view_header","sync_button", "pots_view")
         self.pot_id = None
     
+    # Function to switch to an individually selected pot (aka pot selected from the pot view)
     def switch_to_individual_pot_view(self):
         self.switch_to_page("pot_view_header","pot_view")
         
@@ -386,18 +394,23 @@ class AppController:
         finally:
             conn.close()
             conn2.close()
-    
+
+    # Function for randomly generating sensor values and storing them in the sensor database for later use
     def sync_sensor(self):
         conn = sqlite3.connect(self.db_sensor_path)
         cursor = conn.cursor()
 
 
-
+        # Create the variables stored randomly making sure they match exactly the same value types in the database
         ground_moisture = random.randint(0, 100)
         pH_ground = round(random.uniform(0.0, 14.0), 2)
         light_day = random.randint(0, 12)
         temperature = round(random.uniform(-20.0, 50.0), 2)
         
+        # Again basic principle as creating all the other values and putting them into a database. Try to execute the said SQL command
+        # If there is an error throw the user the said error
+        # If there are no errors show the user a success message
+        # Then finally close the connection
         try:
             cursor.execute('''
             INSERT INTO sensors (ground_moisture, pH_ground, light_lux, temperature)
@@ -411,8 +424,14 @@ class AppController:
         finally:
             conn.commit()
     
-
+    # Function to add a pot to the pot database. It takes in the location, plant_id, plant_name , plant_picture_location , status , pot_id for correctly updating the 
+    # pot
     def add_pot(self,location,plant_id,plant_name,plant_picture_location,status, pot_id = None):
+        # Much of the code is similar and follow the similar logic as the adding or updating plants code expect there are fewer parameters to pass
+        # Basically connect to the correct database, try to execute an SQL command based on whatever or not we are creating or updating the pot
+        # if there is an error show the user an error message and then close the connection and exit out of the function
+        # If there is no errors then show the user a message based on if we are updating or creating a pot
+        # And then finally commit the changes and close the connection to the database then switch to the correct page
         if not location or not plant_id:
             messagebox.showerror("Greška!", "Molimo vas da unesete sve podatke!")
             return
@@ -447,20 +466,20 @@ class AppController:
         self.switch_to_pot_view()
     
 
-      # Function for deleting the plant
+      # Function for deleting the pot
     def delete_the_pot(self):
-        # Connects to the plants database and creates a cursor for executing SQL commands in the database
+        # Connects to the pots database and creates a cursor for executing SQL commands in the database
         conn = sqlite3.connect(self.db_pot_path)
         cursor = conn.cursor()
         
         try:
-            #Then tries to delete the actual plant from the database
+            #Then tries to delete the actual pot from the database
             cursor.execute('DELETE FROM pots WHERE id= ?' ,(self.pot_id,))
-            # If successfull commits the changes, shows the message box and then switches to the plant view
+            # If successfull commits the changes, shows the message box and then switches to the pot view
             conn.commit()
             messagebox.showinfo("Posuda izbrisana!" , "Uspješno ste izbrisali posudu!")
             self.switch_to_pot_view()
-        # If there is any errors when doing something with the SQlite 3 database then it shows an error and switches back to the actual plant
+        # If there is any errors when doing something with the SQlite 3 database then it shows an error and switches back to the actual pot
         except sqlite3.Error as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju posude: {e}")
             self.switch_to_individual_pot_view()

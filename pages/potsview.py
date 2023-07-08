@@ -17,7 +17,7 @@ class PotsView(Frame):
         
 
        
-    
+    # Function for getting all the pots in the database and displaying them all as buttons in a grid like manner
     def load_and_create_pot_buttons(self):
        conn = sqlite3.connect(self.controller.db_pot_path)
        cursor = conn.cursor()
@@ -34,7 +34,7 @@ class PotsView(Frame):
                 button.destroy()
           self.pot_buttons = []
 
-          max_buttons_per_row = 3
+          max_buttons_per_row = 3 # Again maximum of 3 buttons per row allowed. Switches to a new column if the number of buttons is higher
           num_buttons = len(pots)
           num_rows = (num_buttons + max_buttons_per_row - 1) // max_buttons_per_row
 
@@ -44,6 +44,9 @@ class PotsView(Frame):
                 row = index // max_buttons_per_row + 1
                 column = index % max_buttons_per_row + 1
                 
+                # This is an if statement that checks if the plant_id is greater than 0. If it is the it tries to get the image path to the 
+                # plant image and if it is not empty then it adds the image to the button
+                # If not true no image is displayed. Instead the status of the pot is shown to indicate that this is indeed an empty pot
                 if pot[3] > 0:
                     image_path = pot[4]
                     if image_path:

@@ -54,7 +54,7 @@ class PlantsForm(Frame):
         self.plants_form_maximum_temperature_entry = Entry(self, width= 25, font = (15))
         self.plants_form_maximum_temperature_entry.grid(row=14, column=0 , sticky="N",pady= 5)
 
-        self.plants_form_light_label = Label(self,text = "Idealna svjetlost", font = (25))
+        self.plants_form_light_label = Label(self,text = "Potrebna svjetlost u satima", font = (25))
         self.plants_form_light_label.grid(row = 15, column=0 , sticky="N")
         self.plants_form_light_entry = Entry(self, width= 25, font = (15))
         self.plants_form_light_entry.grid(row=16, column=0 , sticky="N", pady= 5)

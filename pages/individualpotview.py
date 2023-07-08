@@ -3,7 +3,6 @@ from tkinter import Frame,Label,Button, messagebox
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import sqlite3
-import random
 
 class IndividualPotView(Frame):
     def __init__(self,master,controller,pot_id = None):
