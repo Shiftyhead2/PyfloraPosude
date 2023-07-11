@@ -256,6 +256,13 @@ class AppController:
             messagebox.showerror("Prijava nije uspjela!", "Molimo vas unesite sve podatke!")
             return
         
+        # Admin login
+        if username.lower() == "admin" and password.lower() == "admin":
+            messagebox.showinfo("Uspješna prijava!", "Uspješno ste se prijavili u aplikaciju kao admin!")
+            self.switch_to_plant_view()
+            return
+
+        
         
 
         # Connects to the users database and creates a cursor for executing SQL commands in the database
@@ -273,7 +280,7 @@ class AppController:
             result = cursor.fetchone()
         finally:
              # Closes the SQL connection. Commiting is not required since we are not updating the users database
-            print("Closing connection")
+            #print("Closing connection")
             conn.close()
 
        
@@ -282,6 +289,7 @@ class AppController:
         if result is None:
             messagebox.showerror("Prijava nije uspjela!", "Netočno korisničko ime ili lozinka!")
         else:
+
             # Encode the password using the bcrypt module and then save it a variable
             hashed_saved_password = result[0].encode('utf-8')
 
