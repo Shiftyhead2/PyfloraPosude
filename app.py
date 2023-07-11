@@ -411,7 +411,7 @@ class AppController:
 
         # Create the variables stored randomly making sure they match exactly the same value types in the database
         ground_moisture = random.randint(0, 100)
-        pH_ground = round(random.uniform(0.0, 14.0), 2)
+        pH_ground = round(random.uniform(0.0, 14.0), 2) # This code generates a random floating number and rounds it to two decimal places
         light_day = random.randint(0, 12)
         temperature = round(random.uniform(-20.0, 50.0), 2)
         
