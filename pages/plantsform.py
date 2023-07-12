@@ -38,7 +38,7 @@ class PlantsForm(Frame):
         self.plants_form_max_soil_entry = Entry(self, width= 25, font = (15))
         self.plants_form_max_soil_entry.grid(row=8, column=0 , sticky="N", pady= 5)
 
-        self.plants_form_required_moisture_label = Label(self,text = "Potrebna vlažnost tla", font = (25))
+        self.plants_form_required_moisture_label = Label(self,text = "Potrebna vlažnost tla(u mm)", font = (25))
         self.plants_form_required_moisture_label.grid(row=9, column=0 , sticky="N")
         self.plants_form_required_moisture_entry = Entry(self, width= 25, font = (15))
         self.plants_form_required_moisture_entry.grid(row=10, column=0 , sticky="N", pady= 5)
