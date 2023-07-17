@@ -545,7 +545,7 @@ def main():
     root.title("PyFlora")
     root.geometry("1280x720")
 
-    app = AppController(root)
+    AppController(root)
 
     
 
