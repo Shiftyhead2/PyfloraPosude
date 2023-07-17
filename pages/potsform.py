@@ -11,7 +11,6 @@ class PotsForm(Frame):
 
         self.pots_id = None
 
-        self.status = None
 
         self.pots_form_label = Label(self,text = "Posude forma", font = (45),pady= 15)
         self.pots_form_label.grid(row=0, column=0 , sticky="N")
