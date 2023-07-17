@@ -220,6 +220,14 @@ class AppController:
         if not name or not surname or not username or not password:
             messagebox.showerror("Registracija ne uspješna!","Molimo vas unesite sve podatke!")
             return
+        
+        if len(password) <= 4:
+            messagebox.showerror("Prijava nije uspjela!", "Lozinka je prekratka!")
+            return
+        
+        if username.strip() != username or password.strip() != password:
+            messagebox.showerror("Registracija ne uspješna!", "Korisničko ime i lozinka ne smiju sadržavati prazna mjesta")
+            return
 
         # Encrypts and then hashes the encrypted password using the bcrypt python module. It makes sense to encrypt the users password before storing it in a database for added security
         hashed_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
@@ -261,6 +269,8 @@ class AppController:
             messagebox.showinfo("Uspješna prijava!", "Uspješno ste se prijavili u aplikaciju kao admin!")
             self.switch_to_plant_view()
             return
+        
+        
 
         
         
