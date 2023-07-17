@@ -394,12 +394,17 @@ class AppController:
         except OSError as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
             self.switch_to_individual_plant_view()
+            conn.close()
+            conn2.close()
+            return
         # If there is any errors when doing something with the SQlite 3 database then it shows an error and switches back to the actual plant
         except sqlite3.Error as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju biljke: {e}")
             self.switch_to_individual_plant_view()
-        # Closes the connection regradless if there is an error or not
-        finally:
+            conn.close()
+            conn2.close()
+            return
+        else:
             conn.close()
             conn2.close()
 
@@ -491,8 +496,10 @@ class AppController:
         except sqlite3.Error as e:
             messagebox.showerror("Greška!",f"Nešto je pošlo po zlu pri brisanju posude: {e}")
             self.switch_to_individual_pot_view()
-        # Closes the connection regradless if there is an error or not
-        finally:
+            conn.close()
+            return
+        # Closes the connection  if there are no errors
+        else:
             conn.close()
         
     
@@ -510,6 +517,7 @@ class AppController:
             shutil.copy2(picture, file_path)
         except shutil.SameFileError:
             print("Files are the same")
+            pass
 
         return file_path
     
