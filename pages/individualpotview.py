@@ -113,7 +113,7 @@ class IndividualPotView(Frame):
                     sensor_id, ground_moisture, pH_ground, light_lux, temperature = measurement
 
                     # Create and grid the labels
-                    label_text = f"Sensor #{sensor_id}: Mokrost tla={ground_moisture}, pH={pH_ground}, Sunčevih sati: {light_lux}, Temp={temperature}"
+                    label_text = f"Sensor #{sensor_id}: Mokrost tla: {ground_moisture}, pH: {pH_ground}, Sunčevih sati: {light_lux}, Temp: {temperature}"
                     label = Label(self.measurements_frame, text=label_text)
                     label.grid(row=i, column=0, sticky="W")
                     self.measurements_labels.append(label)
@@ -129,10 +129,7 @@ class IndividualPotView(Frame):
                 self.delete_button.grid(row = 6, column= 1, sticky= "WE" , pady = 5)
                 self.show_chart_button.grid(row = 7, column = 1 , padx = 5)
                 self.show_pie_button.grid(row = 7, column= 2 , padx = 5)
-                self.show_histogram_button.grid(row = 7, column = 3 , padx = 5)
-
-
-            
+                self.show_histogram_button.grid(row = 7, column = 3 , padx = 5)   
         finally:
             conn.close()
     
