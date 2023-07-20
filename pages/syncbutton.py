@@ -1,21 +1,20 @@
 from tkinter import Frame,Button
 
 class SyncButton(Frame):
-    def __init__(self,master,controller):
-        super().__init__(master)
+    def __init__(self,root,controller_class):
+        super().__init__(root)
 
-        self.master = master
-        self.controller = controller
+        self.root_window = root
+        self.controller_class = controller_class
 
-        self.sync_button = Button(self,text = "Sync", font = (25),command= self.controller.sync_sensor)
+        self.sync_button = Button(self,text = "Sync", font = ('Arial',15), bg = "#ffffff",command= self.controller_class.sync_sensor, relief= "solid", width= 10,  borderwidth= 1)
         self.sync_button.grid(row=0,column=0,sticky= "N")
 
     
         
-    def show(self,plant_id = None, pot_id = None):
-        self.master.update_idletasks()  # Ensure the window size is updated
+    def show_page(self,plant_id = 0, pot_id = 0):
 
-        self.place(relx=0.8, rely=0.2,anchor="center")
+        self.place(relx=0.1, rely=0.1,anchor="center")
 
-    def hide(self):
+    def hide_page(self):
         self.place_forget()
